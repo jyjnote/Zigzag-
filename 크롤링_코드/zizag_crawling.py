@@ -13,21 +13,19 @@ cols_2=['스타일최고','구매욕상승','궁금증해소']
 Zigzag_1 = pd.DataFrame(columns=cols_1)
 Zigzag_1 = pd.DataFrame(columns=cols_2)
 
-#url = 'https://zigzag.kr/categories/-1?title=%EC%9D%98%EB%A5%98&category_id=-1&middle_category_id=560&sub_category_id=561&sort=201' # 미니스커트
-url='https://zigzag.kr/categories/-1?title=%EC%9D%98%EB%A5%98&category_id=-1&middle_category_id=507&sort=201'#원피스
-
+url='https://zigzag.kr/categories/-1?title=%EC%9D%98%EB%A5%98&category_id=-1&middle_category_id=474&sub_category_id=494&sort=201' #맨투맨/스웨터셔츠
 driver = webdriver.Chrome()
 driver.get(url)
 
-scrolls = 2 # 본인이 해당 변수가 들어간 부분 조정하면됨
-for _ in range(scrolls):
+#scrolls = 2 # 본인이 해당 변수가 들어간 부분 조정하면됨
+for _ in range(2):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(2)
 
 soup = BeautifulSoup(driver.page_source, "html.parser") # html객체를 가져옴
 links = soup.select("#__next > div.zds-themes.light-theme > main > section.css-baq3dp.eabfyam0 > div a")  # 그안의 a태그를 싹다 가져오기
 
-for link in links:
+for link in links[:10]:
     product_url = link.get('href')
     full_url = f'https://zigzag.kr{product_url}' #접속
     driver.get(full_url)
@@ -45,22 +43,23 @@ for link in links:
     
     #리뷰 버튼 작동
     driver.find_element(By.CSS_SELECTOR, '#__next > div.zds-themes.light-theme > div > div.pdp__bottomFloating > div > div.css-qpt0u3.e1yh52zv2 > div > div').click()
-    time.sleep(4)
+    time.sleep(5)
     
-    for _ in range(scrolls):
+    for _ in range(30):
         driver.execute_script('window.scrollTo(0,document.body.scrollHeight);')
-        time.sleep(4)
+        time.sleep(5)
     
     more_list = driver.find_elements(By.CSS_SELECTOR, ".css-1aa4nqt") # 더보기버튼들 담기
     
     for more in more_list:
         try:
             more.click() #더보기들 작동
+            time.sleep(5)
             #print('더보기 작동') #아래 코드로 확인가능
         except:
             pass
     
-    time.sleep(5)    
+    #time.sleep(5)    
     
     review_page = BeautifulSoup(driver.page_source, 'html.parser') #해당 상품의 리뷰 페이지 html 가져오기
     
@@ -105,36 +104,49 @@ for link in links:
 
         review_html = str(review_element.select_one('.css-q2mnm3')) #요소가 있는지 검사하기위해 html 자체를 문자화시킴
 
-        if '맞춤 정보' in review_html: #있으면 아래 작동
-            custom_info=review_element.select_one('.css-q2mnm3').select_one('.css-s53yvn').text
-        else:
-            custom_info = None
+        custom_info = None
+        selected_option = None
+        summary_comment = None
 
-        if '선택 옵션' in review_html:
-            try:
-                custom_info_element = review_element.select_one('.css-q2mnm3')
-                selected_option=custom_info_element.select_one('.css-1ccr5bn').text+custom_info_element.select('.css-1ccr5bn')[1].text
-            except IndexError :
-                selected_option=custom_info_element.select_one('.css-1ccr5bn').text
-        else:
-            selected_option = None
+        elements = review_element.select('.css-q2mnm3')
 
-        if '한줄평' in review_html:
-            #try:
-                summary_comment=review_page.select('.css-s53yvn')[2].text
-            #except IndexError :
-            #   summary_comment=review_page.select('.css-s53yvn')[0].text
-        else:
-            summary_comment = None
+        #성공적으로 요소를 받았는지 검사
+        if len(elements) > 0:
+            text = elements[0].text
+
+            # 모든 경우의 수 계산
+            if '맞춤 정보' in text and '선택 옵션' in text and '한줄평' in text:
+                custom_info = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+                selected_option = elements[0].select('.css-s53yvn.e170qtp21')[1].text
+                summary_comment = elements[0].select('.css-s53yvn.e170qtp21')[2].text
+            
+            elif '맞춤 정보' in text and '선택 옵션' in text:
+                custom_info = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+                selected_option = elements[0].select('.css-s53yvn.e170qtp21')[1].text
+                summary_comment = None
+            elif '맞춤 정보' in text and '한줄평' in text:
+                custom_info = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+                selected_option = None
+                summary_comment = elements[0].select('.css-s53yvn.e170qtp21')[1].text
+
+            elif '선택 옵션' in text and '한줄평' in text:
+                custom_info = None
+                selected_option = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+                summary_comment = elements[0].select('.css-s53yvn.e170qtp21')[1].text
+
+            elif '맞춤 정보' in text:
+                custom_info = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+
+            elif '선택 옵션' in text:
+                selected_option = elements[0].select('.css-s53yvn.e170qtp21')[0].text
+
+            elif '한줄평' in text:
+                summary_comment = elements[0].select('.css-s53yvn.e170qtp21')[0].text
  
-
-        db_1.append([brand_name, item_name, price, review_count, item_score_avg, nickname, review, rating, review_date, custom_info,selected_option,summary_comment])
-        raise IndexError 
-    break
+        db_1.append([brand_name, item_name, price, review_count, item_score_avg, nickname, review, rating, review_date, custom_info,selected_option,summary_comment]) 
+  
 
 Zigzag_1 = pd.DataFrame(db_1, columns=cols_1)
 Zigzag_2 = pd.DataFrame(db_2, columns=cols_2)
 Zigzag = pd.concat([Zigzag_1, Zigzag_2], axis=1)
-Zigzag
-
-Zigzag.to_csv('zigzag_data.csv', index=False)
+Zigzag.to_excel('Zigzag.xlsx', index=False)
