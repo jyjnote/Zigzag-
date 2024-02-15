@@ -1,5 +1,19 @@
 # 프로젝트 개요
 
+모델 구성도
+
+
+<img src=https://github.com/jyjnote/Zigzag-/assets/144209498/c1e5f133-e198-425a-a7e5-48c5978d93af style="width: 50%; height: auto;" alt="모델 구성도_1">
+
+
+<img src="https://github.com/jyjnote/Zigzag-/assets/144209498/ab4fa751-9f73-4427-afc3-89844a890d94" style="width: 50%; height: auto;" alt="모델 구성도_1">
+
+
+
+
+
+
+
 7개 중 가장 강한 기준을 설정 ,키 , 몸무게, 핏 등등
 
 |태성|
