@@ -3,6 +3,16 @@
 모델 구성도
 
 
+|모델 |성능|
+|-----|----|
+|tfidf 캣부스트|84|
+|워드벡터 캣부스트|83
+|필터링 워드벡터 로지스틱|82|
+|1D CNN|75|
+
+
+
+
 <img src=https://github.com/jyjnote/Zigzag-/assets/144209498/c1e5f133-e198-425a-a7e5-48c5978d93af style="width: 50%; height: auto;" alt="모델 구성도_1">
 
 
