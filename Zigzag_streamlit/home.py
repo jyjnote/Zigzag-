@@ -35,7 +35,7 @@ if st.session_state.get("show_members"):
         "J.jpg",
         "auj.jpg",
         "lsr.jpg",
-        "picture.jpeg"
+        "원영.jpg"
     ]
 
     # Current image index
@@ -67,3 +67,9 @@ if st.session_state.get("show_members"):
 # Button for site introduction
 if st.button("사이트 소개"):
     st.write_stream(stream_data)
+
+
+
+
+
+
