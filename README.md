@@ -10,14 +10,7 @@
 |필터링 워드벡터 로지스틱|82|
 |1D CNN|75|
 
-
-
-
-<img src=https://github.com/jyjnote/Zigzag-/assets/144209498/c1e5f133-e198-425a-a7e5-48c5978d93af style="width: 50%; height: auto;" alt="모델 구성도_1">
-
-
-<img src="https://github.com/jyjnote/Zigzag-/assets/144209498/ab4fa751-9f73-4427-afc3-89844a890d94" style="width: 50%; height: auto;" alt="모델 구성도_1">
-
+추가 기능 및 장고로 대쉬보드 제작중
 
 
 
