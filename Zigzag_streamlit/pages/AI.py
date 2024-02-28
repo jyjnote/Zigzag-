@@ -9,6 +9,11 @@ from mecab import MeCab
 import time
 import random
 
+import google.generativeai as genai
+
+genai.configure(api_key='AIzaSyBw71Pp8yMi6mSRYCGWxGRxZCrXtUqGz60')
+model = genai.GenerativeModel('models/gemini-pro')
+
 
 artifact_path = 'artifact/'
 image_path = "image/"
@@ -160,7 +165,9 @@ no_reviews_features = np.array((item[main_features].eq(0).sum() == item_reviews)
 
 main_features_filtered = np.array(main_features)[~no_reviews_features]
 
-review_counts = item[main_features_filtered]
+#review_counts = item[main_features_filtered]
+selected_col = [main_features[i] for i, pick in enumerate(get_selected_col) if pick]
+review_counts = item[selected_col]
 
 sentiment_counts = review_counts.apply(lambda x: pd.Series(x.value_counts()), axis=0).fillna(0)
 
@@ -190,8 +197,8 @@ if prompt:
 
 if prompt:
     # 랜덤한 오차 생성
-    low_error = random.randint(-5, 0)  # 키에 대한 오차 범위 (-5cm ~ 0cm)
-    high_error = random.randint(0, 5)  # 몸무게에 대한 오차 범위 (0kg ~ 5kg)
+    low_error = random.randint(-2, 0)  # 키에 대한 오차 범위 (-5cm ~ 0cm)
+    high_error = random.randint(0, 2)  # 몸무게에 대한 오차 범위 (0kg ~ 5kg)
     
     # 오차를 키와 몸무게에 적용
     min_height = height + low_error
@@ -235,8 +242,10 @@ if prompt:
             <span>{text}</span>
         </div>
     """, unsafe_allow_html=True)
+    with st.spinner('데이터 뽑는 중 띠리띠리..'):
+        result = model.generate_content(f'{text} 분석 및 요약해서 이게 구매할만 할까?')
+        st.write(result.text)
     
-
 
 #if get_analsys:
     # anal_db = db[db['상품명'] == selected_product]
@@ -269,4 +278,3 @@ if prompt:
     #     </div>
     # """, unsafe_allow_html=True)
     # #st.write_stream(stream_data(text))
-
