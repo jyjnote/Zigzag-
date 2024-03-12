@@ -5,7 +5,6 @@ from plotly.subplots import make_subplots
 import plotly.graph_objs as go
 import plotly.express as px
 import joblib
-#from mecab import MeCab
 import time
 import random
 
@@ -15,8 +14,6 @@ genai.configure(api_key='AIzaSyBw71Pp8yMi6mSRYCGWxGRxZCrXtUqGz60')
 model = genai.GenerativeModel('models/gemini-pro')
 
 
-artifact_path = 'artifact/'
-image_path = "image/"
 path = 'data/'
 
 def stream_data(text):
@@ -25,20 +22,6 @@ def stream_data(text):
         time.sleep(0.05)
         
 
-def get_predict(data,_scaler, col, model, vectorizer):
-    x = vectorizer.transform(data).toarray()
-    x = _scaler.transform(x)    
-    x = x[:, col]  # Accessing the appropriate index of the tuple
-    return model.predict(x)
-
-def get_keyword(data, models_info):
-    predictions = []
-    for model_info in models_info:
-        vectorizer, scaler, col, model = model_info
-        predictions.append(get_predict(tokenizer(data), scaler, col, model, vectorizer))
-    return predictions
-
-
 @st.cache_data
 def load_data(file_path):
     return pd.read_excel(file_path, index_col=False)
@@ -46,9 +29,8 @@ def app():
     db = load_data('review_46086.xlsx')
 
     main_features=['색감','핏','재질','퀄리티','제품상태','가격','두께']
-    keyword_dict = {0: '색감', 1: '핏', 2: '재질', 3: '퀄리티', 4: '제품상태', 5: '가격', 6: '두께'}
+    #keyword_dict = {0: '색감', 1: '핏', 2: '재질', 3: '퀄리티', 4: '제품상태', 5: '가격', 6: '두께'}
 
-    #st.image(f'image\로고.png')
 
     category = db['중분류'].unique().tolist()
     selected_category = st.selectbox('**중분류**', category)
@@ -72,56 +54,61 @@ def app():
 
 
     with st.container():
-        check_color,check_outfit,check_price,check_quality,check_status,check_texture,check_thick = st.columns(len(main_features))
+        check_color, check_outfit, check_price, check_quality, check_status, check_texture, check_thick = st.columns(len(main_features))
         with check_color:
-            checked_color=st.checkbox('색감')
+            checked_color = st.checkbox('색감')
         with check_outfit:
-            checked_outfit=st.checkbox('핏')
+            checked_outfit = st.checkbox('핏')
         with check_price:
-            checked_price=st.checkbox('가격')
+            checked_price = st.checkbox('재질')
         with check_quality:
-            checked_quality=st.checkbox('퀄리티')
+            checked_quality = st.checkbox('퀄리티')
         with check_status:
-            checked_status=st.checkbox('상태')
+            checked_status = st.checkbox('상태')
         with check_texture:
-            check_texture=st.checkbox('재질')
+            checked_texture = st.checkbox('가격')
         with check_thick:
-            checked_thick=st.checkbox('두께')
-        get_selected_col=[checked_color,checked_outfit,checked_price,checked_quality,checked_status,check_texture,checked_thick]
-        
-    
-    get_analsys=False
+            checked_thick = st.checkbox('두께')
+        get_selected_col = [checked_color, checked_outfit, checked_price, checked_quality, checked_status, checked_texture, checked_thick]
+
+    #get_analsys=False
 
     item = db[db['상품명'] == selected_product]
     item_reviews = len(item)
-    no_reviews_features = np.array((item[main_features].eq(0).sum() == item_reviews).to_list())
+    #no_reviews_features = np.array((item[main_features].eq(0).sum() == item_reviews).to_list())
 
-    main_features_filtered = np.array(main_features)[~no_reviews_features]
-
+    
+    
+    #main_features_filtered = np.array(main_features)[~no_reviews_features]
+    main_features_filtered = np.array(main_features)
+    st.write
+    
     #review_counts = item[main_features_filtered]
     selected_col = [main_features[i] for i, pick in enumerate(get_selected_col) if pick]
     review_counts = item[selected_col]
-
+    
     sentiment_counts = review_counts.apply(lambda x: pd.Series(x.value_counts()), axis=0).fillna(0)
 
     fig = make_subplots(rows=1, cols=len(main_features_filtered), specs=[[{'type': 'domain'}] * len(main_features_filtered)],
-                            subplot_titles=review_counts.columns)
+                    subplot_titles=review_counts.columns)
 
     colors = ['rgb(255, 99, 71)', 'rgb(255, 255, 100)', 'rgb(135, 206, 250)']  # 파란색, 빨간색, 노란색
 
     for i, col in enumerate(sentiment_counts.columns, start=1):
-        fig.add_trace(go.Pie(labels=['부정','중립','긍정'], values=sentiment_counts[col].values, name=col,
+        if col not in review_counts.columns:
+            fig.add_trace(go.Scatter(text=f"No data available for '{col}'", mode='text', showlegend=False), 1, i)
+        else:
+            fig.add_trace(go.Pie(labels=['부정','중립','긍정'], values=sentiment_counts[col].values, name=col,
                                 marker=dict(colors=colors)), 1, i)
 
     fig.update_traces(hole=.4, hoverinfo="label+percent+name")
 
     fig.update_layout(
-            title_text=selected_product + ' 리뷰 트랜드',
-        )
+        title_text=selected_product + ' 리뷰 트랜드',
+    )
     fig.update_layout(coloraxis=dict(colorscale='Bluered_r'), showlegend=True)
 
     st.plotly_chart(fig)
-
 
     prompt = st.chat_input('예시)[1+1수량할인💗/5만장돌파/컬러추가] 단독)살결 인생슬리브리스 - 5color')
     if prompt:
