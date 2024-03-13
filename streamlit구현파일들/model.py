@@ -56,32 +56,32 @@ def app():
     with st.container():
         check_color, check_outfit, check_price, check_quality, check_status, check_texture, check_thick = st.columns(len(main_features))
         with check_color:
-            checked_color = st.checkbox('색감')
+            checked_color = st.checkbox('색감',value=True)
         with check_outfit:
-            checked_outfit = st.checkbox('핏')
+            checked_outfit = st.checkbox('핏',value=True)
         with check_price:
-            checked_price = st.checkbox('재질')
+            checked_price = st.checkbox('재질',value=True)
         with check_quality:
-            checked_quality = st.checkbox('퀄리티')
+            checked_quality = st.checkbox('퀄리티',value=True)
         with check_status:
-            checked_status = st.checkbox('상태')
+            checked_status = st.checkbox('상태',value=True)
         with check_texture:
-            checked_texture = st.checkbox('가격')
+            checked_texture = st.checkbox('가격',value=True)
         with check_thick:
-            checked_thick = st.checkbox('두께')
+            checked_thick = st.checkbox('두께',value=True)
         get_selected_col = [checked_color, checked_outfit, checked_price, checked_quality, checked_status, checked_texture, checked_thick]
 
     #get_analsys=False
 
     item = db[db['상품명'] == selected_product]
     item_reviews = len(item)
-    #no_reviews_features = np.array((item[main_features].eq(0).sum() == item_reviews).to_list())
+    no_reviews_features = np.array((item[main_features].eq(0).sum() == item_reviews).to_list())
 
     
     
-    #main_features_filtered = np.array(main_features)[~no_reviews_features]
-    main_features_filtered = np.array(main_features)
-    st.write
+    main_features_filtered = np.array(main_features)[~no_reviews_features]
+    #main_features_filtered = np.array(main_features)
+    
     
     #review_counts = item[main_features_filtered]
     selected_col = [main_features[i] for i, pick in enumerate(get_selected_col) if pick]
