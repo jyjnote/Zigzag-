@@ -157,5 +157,6 @@
 
 ## Reference 
 
- 아시아 경제 / MZ세대 의류 구매 시 온라인 쇼핑몰 먼저 찾는다
- 한국소비자원
+ [아시아 경제 / MZ세대 의류 구매 시 온라인 쇼핑몰 먼저 찾는다](https://www.asiae.co.kr/article/2023052316024487091)
+ 
+ [한국소비자원](https://www.kca.go.kr/home/main.do)
