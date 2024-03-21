@@ -10,7 +10,7 @@ import random
 
 import google.generativeai as genai
 
-genai.configure(api_key='AIzaSyBw71Pp8yMi6mSRYCGWxGRxZCrXtUqGz60')
+genai.configure(api_key='your_google_api')
 model = genai.GenerativeModel('models/gemini-pro')
 
 
