@@ -1,3 +1,6 @@
+![KakaoTalk_20240320_174142009](https://github.com/jyjnote/Zigzag-/assets/144209498/3e733b36-6134-428c-841c-9f7fe72a63a7)
+
+
 # 🌸ZigZag🌸 쇼핑몰 분석 & BI서비스
 
 📌 데이터 출처: [ZigZag](https://zigzag.kr/)
